@@ -2,10 +2,12 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const PORT = 3000;
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 const db = mysql.createConnection({
     host: 'localhost',
@@ -22,6 +24,33 @@ db.connect(err => {
     }
 });
 
+// ================== ROUTES CRUD TASKS ==================
+
+// ajouter une tâche
+app.post('/tasks', (req, res) => {
+    const { title, description, deadline } = req.body;
+
+    // vérification des champs
+    if (!title || !description || !deadline) {
+        return res.status(400).json({ error: 'Veuillez remplir tous les champs' });
+    }
+    db.query(
+        'INSERT INTO tasks (title, description, deadline) VALUES (?, ?, ?)',
+        [title, description, deadline],
+        (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.json({ 
+                message: 'Tâche ajoutée avec succès', 
+                data: { id: result.insertId, title, description, deadline } 
+            });
+        }
+    );
+});
+
+
+
 // récupérer les tâches 
 app.get('/tasks', (req, res) => {
     db.query('SELECT * FROM tasks', (err, results) => {
@@ -29,6 +58,7 @@ app.get('/tasks', (req, res) => {
         res.json(results);
     });
 });
+
 
 // modifier une tâche 
 app.put('/tasks/:id', (req, res) => {

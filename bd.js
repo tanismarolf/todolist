@@ -2,8 +2,8 @@ const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
   host: 'localhost',
-  user: 'root',          // change si ton utilisateur est différent
-  password: 'chonjen2hack', // mets ton vrai mot de passe
+  user: 'root',          
+  password: 'chonjen2hack', 
   database: 'todo_db',
   port: 3306
 });
